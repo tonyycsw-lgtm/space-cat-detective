@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>太空貓偵探：星際地圖之謎｜小小AI科學家示範繪本</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%231b2a6b'/%3E%3Cpath d='M50 18 L59 42 L84 43 L65 59 L72 84 L50 69 L28 84 L35 59 L16 43 L41 42 Z' fill='%23ffd166'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=ZCOOL+KuaiLe&family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
+<style>
+  :root{
+    --night1:#0e1a3f; --night2:#1b2a6b; --night3:#3b2d7a;
+    --paper:#fff9ec; --ink:#2b2333; --ink-soft:#5a5066;
+    --orange:#f59e42; --gold:#ffd166; --purple:#7c5cbf; --brown:#8b5a2b;
+    --green:#3aa655; --blue:#3f6fd8;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    font-family:'Noto Sans SC','Microsoft YaHei','PingFang TC',sans-serif;
+    background:linear-gradient(165deg,var(--night1),var(--night2) 48%,var(--night3));
+    background-attachment:fixed;
+    color:var(--ink);
+    display:flex; flex-direction:column; align-items:center;
+    min-height:100vh; padding:18px 12px 26px;
+  }
+  .stars{position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 12% 22%, rgba(255,255,255,.85) 50%, transparent 51%),
+      radial-gradient(1px 1px at 28% 68%, rgba(255,255,255,.7) 50%, transparent 51%),
+      radial-gradient(2px 2px at 43% 12%, rgba(255,255,255,.8) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 58% 38%, rgba(255,209,102,.9) 50%, transparent 51%),
+      radial-gradient(1px 1px at 71% 80%, rgba(255,255,255,.7) 50%, transparent 51%),
+      radial-gradient(2px 2px at 84% 26%, rgba(255,255,255,.85) 50%, transparent 51%),
+      radial-gradient(1px 1px at 92% 60%, rgba(255,255,255,.6) 50%, transparent 51%),
+      radial-gradient(1.5px 1.5px at 8% 82%, rgba(255,209,102,.8) 50%, transparent 51%);
+  }
+  header{position:relative; z-index:1; text-align:center; margin-bottom:14px;}
+  header .kicker{
+    color:#ffd9a0; font-size:13px; letter-spacing:.35em; margin-bottom:6px; font-weight:700;
+  }
+  header h1{
+    font-family:'ZCOOL KuaiLe','Microsoft YaHei','PingFang TC',sans-serif;
+    color:#fff; font-size:clamp(20px,3.4vw,30px); font-weight:400; text-shadow:0 2px 12px rgba(0,0,0,.35);
+  }
+  .book-wrap{position:relative; z-index:1; width:100%; max-width:980px; display:flex; justify-content:center;}
+  #book{
+    position:relative; width:100%;
+  }
+  .page{
+    display:none; background:var(--paper); border-radius:18px; overflow:hidden;
+    box-shadow:0 24px 60px rgba(4,10,35,.55), 0 2px 0 rgba(255,255,255,.14) inset;
+    border:1px solid rgba(255,255,255,.18);
+    animation:pageIn .45s ease both;
+  }
+  .page.active{display:block;}
+  @keyframes pageIn{
+    from{opacity:0; transform:translateX(26px);}
+    to{opacity:1; transform:translateX(0);}
+  }
+  .page.prev-anim{animation:pageInPrev .45s ease both;}
+  @keyframes pageInPrev{
+    from{opacity:0; transform:translateX(-26px);}
+    to{opacity:1; transform:translateX(0);}
+  }
+  .page-img{
+    width:100%; height:auto; display:block; background:#dbe4f5;
+  }
+  .page-body{padding:18px 26px 22px;}
+  .page-meta{
+    display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;
+    color:var(--ink-soft); font-size:13px; font-weight:500;
+  }
+  .page-meta .badge{
+    background:var(--night2); color:#fff; border-radius:999px; padding:3px 12px; font-size:12px; letter-spacing:.08em;
+  }
+  .story{font-size:clamp(16px,2.2vw,20px); line-height:1.85; font-weight:500; margin-bottom:14px;}
+  .story em{font-style:normal; color:var(--brown); font-weight:900;}
+  .chips{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;}
+  .chip{
+    background:#ffe9cf; color:#7a4a12; border:1.5px solid var(--orange);
+    border-radius:999px; padding:5px 14px; font-size:14px; font-weight:900;
+  }
+  .chip.purple{background:#efe9ff; color:#4a3a8f; border-color:var(--purple);}
+  .prompt-box{
+    background:#f3efff; border:1.5px dashed #b9a8e8; border-radius:12px;
+    padding:12px 16px; font-size:14px; line-height:1.7; color:#4a3a6f;
+  }
+  .prompt-box .prompt-label{
+    display:inline-block; background:var(--purple); color:#fff; font-size:12px; font-weight:900;
+    border-radius:6px; padding:2px 10px; margin-bottom:6px; letter-spacing:.1em;
+  }
+  .prompt-box .formula{color:#8a7ab0; font-weight:700;}
+  /* 封面特化 */
+  .cover .page-img{aspect-ratio:16/9;}
+  .cover .title-block{background:var(--paper); padding:24px 26px 26px; text-align:center;}
+  .cover .book-title{
+    font-family:'ZCOOL KuaiLe','Microsoft YaHei','PingFang TC',sans-serif;
+    font-size:clamp(26px,4.6vw,44px); color:var(--night2); letter-spacing:.06em; line-height:1.3;
+  }
+  .cover .subtitle{color:var(--ink-soft); margin-top:8px; font-size:clamp(13px,1.9vw,16px); font-weight:700;}
+  .cover .author{margin-top:6px; color:var(--brown); font-size:clamp(12px,1.7vw,14px); font-weight:500;}
+  .cover .formula-row{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:16px 0 4px;
+  }
+  .formula-chip{
+    background:var(--night2); color:#fff; border-radius:999px; padding:6px 14px;
+    font-size:clamp(12px,1.8vw,14px); font-weight:900; letter-spacing:.05em;
+  }
+  .formula-chip small{display:block; font-size:11px; font-weight:500; opacity:.85; letter-spacing:.1em;}
+  .formula-arrow{color:var(--orange); font-weight:900; align-self:center; font-size:18px;}
+  /* 導航 */
+  nav{position:relative; z-index:1; display:flex; align-items:center; justify-content:center; gap:16px; margin-top:16px; flex-wrap:wrap;}
+  .nav-btn{
+    font-family:inherit; border:none; cursor:pointer; background:#fff; color:var(--night2);
+    font-size:16px; font-weight:900; padding:10px 20px; border-radius:999px;
+    box-shadow:0 6px 18px rgba(4,10,35,.4); transition:transform .15s, background .15s;
+  }
+  .nav-btn:hover:not(:disabled){background:var(--gold); transform:translateY(-1px);}
+  .nav-btn:disabled{opacity:.4; cursor:not-allowed;}
+  .nav-btn:focus-visible{outline:3px solid var(--gold); outline-offset:2px;}
+  .dots{display:flex; gap:8px; align-items:center;}
+  .dot{
+    width:12px; height:12px; border-radius:50%; border:2px solid rgba(255,255,255,.85);
+    background:transparent; cursor:pointer; padding:0; transition:background .2s, transform .2s;
+  }
+  .dot:hover{transform:scale(1.2);}
+  .dot.active{background:var(--gold); border-color:var(--gold);}
+  .counter{color:#dbe4f5; font-size:14px; font-weight:700; letter-spacing:.1em; min-width:56px; text-align:center;}
+  footer{position:relative; z-index:1; margin-top:16px; color:#aab6e8; font-size:12.5px; text-align:center; line-height:1.7;}
+  footer b{color:#ffd9a0;}
+  @media (max-width:640px){
+    body{padding:12px 8px 18px;}
+    .page-body{padding:14px 16px 18px;}
+    .page-meta .badge{font-size:11px;}
+    .prompt-box{font-size:13px; padding:10px 12px;}
+    nav{gap:12px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .page{animation:none;}
+  }
+</style>
+</head>
+<body>
+<div class="stars" aria-hidden="true"></div>
+
+<header>
+  <div class="kicker">小小AI科學家 · 第2堂示範作品</div>
+  <h1>AI電子繪本｜創意提示詞繪本創作</h1>
+</header>
+
+<div class="book-wrap">
+<div id="book" aria-live="polite">
+
+  <!-- ===== 第1頁 封面 ===== -->
+  <section class="page cover active" data-page="0" aria-label="第1頁 封面">
+    <img class="page-img" src="assets/p01_cover.jpg" alt="太空貓偵探站在太空船駕駛艙，望向窗外璀璨銀河" width="2730" height="1536">
+    <div class="title-block">
+      <div class="book-title">太空貓偵探<br>星際地圖之謎</div>
+      <div class="subtitle">小小AI科學家 · 老師示範電子繪本</div>
+      <div class="author">第2堂：AI魔法師——用咒語（Prompt）創作繪本</div>
+      <div class="formula-row">
+        <span class="formula-chip">邊個<small>角色</small></span>
+        <span class="formula-arrow">＋</span>
+        <span class="formula-chip">做緊咩<small>動作</small></span>
+        <span class="formula-arrow">＋</span>
+        <span class="formula-chip">喺邊度<small>場景</small></span>
+        <span class="formula-arrow">＋</span>
+        <span class="formula-chip">咩風格<small>風格</small></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 第2頁 開頭 ===== -->
+  <section class="page" data-page="1" aria-label="第2頁 開頭">
+    <img class="page-img" src="assets/p02_begin.jpg" alt="太空貓偵探看著螢幕上的緊急訊息，太空船飛過星星" width="2730" height="1536">
+    <div class="page-body">
+      <div class="page-meta"><span class="badge">第 2 頁</span><span>開頭：任務出現</span></div>
+      <p class="story">在好遠好遠的銀河，住著一位<em>太空貓偵探</em>。有一天，他收到緊急訊息：「<em>星際地圖被偷走了！</em>」</p>
+      <div class="prompt-box">
+        <div class="prompt-label">咒語示範</div><br>
+        <span class="formula">邊個＋做緊咩＋喺邊度＋咩風格：</span>一隻橙色毛的貓偵探，戴著啡色偵探帽，穿著藍色太空衣，坐在太空船裡看螢幕上的緊急訊息，水彩風格
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 第3頁 問題 ===== -->
+  <section class="page" data-page="2" aria-label="第3頁 問題">
+    <img class="page-img" src="assets/p03_problem.jpg" alt="太空貓偵探托著頭，看著模糊監控螢幕上的機械人黑影" width="2730" height="1536">
+    <div class="page-body">
+      <div class="page-meta"><span class="badge">第 3 頁</span><span>問題：線索太少</span></div>
+      <p class="story">太空貓展開調查，可是監控影片太模糊，只看到一個<em>機械人的黑影</em>。「線索這麼少，怎樣找到小偷呢？」</p>
+      <div class="prompt-box">
+        <div class="prompt-label">咒語示範</div><br>
+        <span class="formula">邊個＋做緊咩＋喺邊度＋咩風格：</span>一隻橙色毛的貓偵探，戴著啡色偵探帽，穿著藍色太空衣，站在案發現場托著頭看模糊監控螢幕，水彩風格
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 第4頁 想辦法① ===== -->
+  <section class="page" data-page="3" aria-label="第4頁 想辦法">
+    <img class="page-img" src="assets/p04_ai.jpg" alt="太空貓偵探用AI偵測器記錄機械人樣本" width="2730" height="1536">
+    <div class="page-body">
+      <div class="page-meta"><span class="badge">第 4 頁</span><span>想辦法①：AI三步曲</span></div>
+      <p class="story">太空貓有法寶——<em>AI偵測器</em>！他錄下機械人的影像做「數據」，讓AI「學習」規律，再叫AI「預測」誰是小偷。</p>
+      <div class="chips">
+        <span class="chip">數據</span><span class="chip purple">學習</span><span class="chip">預測</span>
+      </div>
+      <div class="prompt-box">
+        <div class="prompt-label">咒語示範</div><br>
+        <span class="formula">邊個＋做緊咩＋喺邊度＋咩風格：</span>一隻橙色毛的貓偵探，戴著啡色偵探帽，穿著藍色太空衣，坐在操作台前用AI偵測器記錄機械人樣本，水彩風格
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 第5頁 轉折 ===== -->
+  <section class="page" data-page="4" aria-label="第5頁 轉折">
+    <img class="page-img" src="assets/p05_mistake.jpg" alt="AI螢幕顯示紅色叉號，太空貓偵探嚇了一跳" width="2730" height="1536">
+    <div class="page-body">
+      <div class="page-meta"><span class="badge">第 5 頁</span><span>轉折：AI也會犯錯</span></div>
+      <p class="story">「咦，<em>AI認錯人了</em>！它把枱燈當成機械人！」原來樣本不夠多、動作不夠清晰，AI也會犯錯。</p>
+      <div class="prompt-box">
+        <div class="prompt-label">咒語示範</div><br>
+        <span class="formula">邊個＋做緊咩＋喺邊度＋咩風格：</span>一隻橙色毛的貓偵探，戴著啡色偵探帽，穿著藍色太空衣，瞪大眼睛看著螢幕上的紅色叉號，水彩風格
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 第6頁 想辦法② ===== -->
+  <section class="page" data-page="5" aria-label="第6頁 改良">
+    <img class="page-img" src="assets/p06_retrain.jpg" alt="太空貓偵探專心拍攝不同角度的機械人照片" width="2730" height="1536">
+    <div class="page-body">
+      <div class="page-meta"><span class="badge">第 6 頁</span><span>想辦法②：加樣本再訓練</span></div>
+      <p class="story">太空貓沒有放棄：「<em>樣本不夠，就加多一點！</em>」他拍下不同角度的機械人照片，重新訓練AI。</p>
+      <div class="prompt-box">
+        <div class="prompt-label">咒語示範</div><br>
+        <span class="formula">邊個＋做緊咩＋喺邊度＋咩風格：</span>一隻橙色毛的貓偵探，戴著啡色偵探帽，穿著藍色太空衣，專心用平板拍攝不同角度的機械人照片，水彩風格
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 第7頁 解決 ===== -->
+  <section class="page" data-page="6" aria-label="第7頁 解決">
+    <img class="page-img" src="assets/p07_solve.jpg" alt="太空貓偵探開心跳起慶祝，AI認出鐵皮機械人小偷" width="2730" height="1536">
+    <div class="page-body">
+      <div class="page-meta"><span class="badge">第 7 頁</span><span>解決：認出小偷</span></div>
+      <p class="story">「這次認出來了！」AI找出小偷——<em>銀河鐵皮機械人</em>！太空貓捉住他，取回星際地圖。</p>
+      <div class="prompt-box">
+        <div class="prompt-label">咒語示範</div><br>
+        <span class="formula">邊個＋做緊咩＋喺邊度＋咩風格：</span>一隻橙色毛的貓偵探，戴著啡色偵探帽，穿著藍色太空衣，開心地舉起雙爪慶祝，螢幕顯示綠色剔號，水彩風格
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 第8頁 結局 ===== -->
+  <section class="page" data-page="7" aria-label="第8頁 結局">
+    <img class="page-img" src="assets/p08_ending.jpg" alt="太空貓偵探與小機械人一起展開星際地圖，窗外銀河閃耀" width="2730" height="1536">
+    <div class="page-body">
+      <div class="page-meta"><span class="badge">第 8 頁</span><span>結局：AI三部曲金句</span></div>
+      <p class="story">太空貓說：「<em>AI不是天生就懂，是靠好多好多數據學回來的！</em>」記得三步曲：<em>數據、學習、預測</em>！</p>
+      <div class="chips">
+        <span class="chip">數據</span><span class="chip purple">學習</span><span class="chip">預測</span>
+      </div>
+      <div class="prompt-box">
+        <div class="prompt-label">咒語示範</div><br>
+        <span class="formula">邊個＋做緊咩＋喺邊度＋咩風格：</span>一隻橙色毛的貓偵探，戴著啡色偵探帽，穿著藍色太空衣，與小機械人一起展開星際地圖，水彩風格
+      </div>
+    </div>
+  </section>
+
+</div>
+</div>
+
+<nav aria-label="繪本翻頁控制">
+  <button class="nav-btn" id="prevBtn" type="button" aria-label="上一頁">‹ 上一頁</button>
+  <div class="dots" id="dots" role="tablist" aria-label="頁面選擇"></div>
+  <button class="nav-btn" id="nextBtn" type="button" aria-label="下一頁">下一頁 ›</button>
+  <span class="counter" id="counter">1 / 8</span>
+</nav>
+
+<footer>
+  <b>小貼士：</b>用鍵盤 ← → 或點擊兩側按鈕翻頁 · 每頁下方嘅「咒語示範」就係第2堂教嘅 Prompt 公式「邊個＋做緊咩＋喺邊度＋咩風格」<br>
+  故事主線：主角遇到問題 → 想辦法 → 解決 ｜ AI三部曲：數據 → 學習 → 預測
+</footer>
+
+<script>
+(function(){
+  var pages = Array.prototype.slice.call(document.querySelectorAll('.page'));
+  var dotsWrap = document.getElementById('dots');
+  var counter = document.getElementById('counter');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var current = 0;
+  var touchX = null;
+
+  pages.forEach(function(p, i){
+    var dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('role', 'tab');
+    dot.setAttribute('aria-label', '第 ' + (i + 1) + ' 頁');
+    dot.addEventListener('click', function(){ go(i); });
+    dotsWrap.appendChild(dot);
+  });
+  var dots = Array.prototype.slice.call(dotsWrap.children);
+
+  function go(i, dir){
+    if(i < 0 || i >= pages.length || i === current) return;
+    var prev = pages[current];
+    var next = pages[i];
+    prev.classList.remove('active');
+    next.classList.remove('prev-anim');
+    if(dir === 'prev') next.classList.add('prev-anim');
+    next.classList.add('active');
+    current = i;
+    dots.forEach(function(d, k){ d.classList.toggle('active', k === current); });
+    counter.textContent = (current + 1) + ' / ' + pages.length;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === pages.length - 1;
+  }
+
+  prevBtn.addEventListener('click', function(){ go(current - 1, 'prev'); });
+  nextBtn.addEventListener('click', function(){ go(current + 1, 'next'); });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowLeft'){ e.preventDefault(); go(current - 1, 'prev'); }
+    else if(e.key === 'ArrowRight'){ e.preventDefault(); go(current + 1, 'next'); }
+    else if(e.key === 'Home'){ go(0, 'prev'); }
+    else if(e.key === 'End'){ go(pages.length - 1, 'next'); }
+  });
+
+  var book = document.getElementById('book');
+  book.addEventListener('touchstart', function(e){ touchX = e.touches[0].clientX; }, {passive:true});
+  book.addEventListener('touchend', function(e){
+    if(touchX === null) return;
+    var dx = e.changedTouches[0].clientX - touchX;
+    if(Math.abs(dx) > 48){
+      if(dx < 0) go(current + 1, 'next');
+      else go(current - 1, 'prev');
+    }
+    touchX = null;
+  }, {passive:true});
+
+  prevBtn.disabled = current === 0;
+})();
+</script>
+</body>
+</html>
